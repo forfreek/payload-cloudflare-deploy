@@ -52,7 +52,7 @@ jobs:
       - run: pnpm config set dangerouslyAllowAllBuilds true
       - run: pnpm install --no-frozen-lockfile
       - name: Set Worker runtime secret
-        run: printf '%s' "$PAYLOAD_SECRET" | pnpm exec wrangler secret put PAYLOAD_SECRET --env production
+        run: printf '%s' "$PAYLOAD_SECRET" | pnpm exec wrangler secret put PAYLOAD_SECRET --name payload-cms-prod-production
         env:
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
