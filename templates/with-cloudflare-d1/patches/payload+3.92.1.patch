@@ -1,16 +1,25 @@
 diff --git a/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js b/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
 --- a/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
 +++ b/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
-@@
+@@ -3,8 +3,8 @@
+ import { password } from '../../../fields/validations.js';
 -const currentPasswordHashPrefix = 'pbkdf2-sha256-v1:';
 -const currentPasswordHashIterations = 600000;
 +const currentPasswordHashPrefix = 'pbkdf2-sha256-cf-v1:';
 +const currentPasswordHashIterations = 100000;
-@@
- export const getPasswordHashParameters = (hash) => {
-+    if (typeof hash === 'string' && hash.startsWith(currentPasswordHashPrefix)) {
-+        return { hash: hash.slice(currentPasswordHashPrefix.length), iterations: currentPasswordHashIterations, keyLength: currentPasswordHashKeyLength };
+@@ -43,6 +43,13 @@
+ };
+ export const getPasswordHashParameters = (hash)=>{
++    const cloudflarePrefix = 'pbkdf2-sha256-cf-v1:';
++    if (typeof hash === 'string' && hash.startsWith(cloudflarePrefix)) {
++        return {
++            hash: hash.slice(cloudflarePrefix.length),
++            iterations: currentPasswordHashIterations,
++            keyLength: currentPasswordHashKeyLength
++        };
 +    }
      if (isCurrentPasswordHash(hash)) {
-@@
- export const isCurrentPasswordHash = (hash) => typeof hash === 'string' && hash.startsWith(currentPasswordHashPrefix);
+@@ -57,4 +64,4 @@
+ };
+-export const isCurrentPasswordHash = (hash)=>typeof hash === 'string' && hash.startsWith(currentPasswordHashPrefix);
++export const isCurrentPasswordHash = (hash)=>typeof hash === 'string' && (hash.startsWith(currentPasswordHashPrefix) || hash.startsWith('pbkdf2-sha256-cf-v1:'));
