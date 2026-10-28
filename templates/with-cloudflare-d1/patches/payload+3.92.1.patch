@@ -1,0 +1,16 @@
+diff --git a/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js b/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
+--- a/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
++++ b/node_modules/payload/dist/auth/strategies/local/generatePasswordSaltHash.js
+@@
+-const currentPasswordHashPrefix = 'pbkdf2-sha256-v1:';
+-const currentPasswordHashIterations = 600000;
++const currentPasswordHashPrefix = 'pbkdf2-sha256-cf-v1:';
++const currentPasswordHashIterations = 100000;
+@@
+ export const getPasswordHashParameters = (hash) => {
++    if (typeof hash === 'string' && hash.startsWith(currentPasswordHashPrefix)) {
++        return { hash: hash.slice(currentPasswordHashPrefix.length), iterations: currentPasswordHashIterations, keyLength: currentPasswordHashKeyLength };
++    }
+     if (isCurrentPasswordHash(hash)) {
+@@
+ export const isCurrentPasswordHash = (hash) => typeof hash === 'string' && hash.startsWith(currentPasswordHashPrefix);
