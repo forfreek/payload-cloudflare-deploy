@@ -49,6 +49,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - run: pnpm config set dangerouslyAllowAllBuilds true
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm run deploy
         env:
