@@ -45,13 +45,11 @@ jobs:
           ref: 3.x
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          run_install: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
-          cache-dependency-path: templates/with-cloudflare-d1/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run deploy
         env:
           CLOUDFLARE_ENV: production
