@@ -1,8 +1,6 @@
-name: Sync Payload 3.x and deploy Cloudflare template
+name: Deploy Payload Cloudflare CMS
 
 on:
-  schedule:
-    - cron: "23 */6 * * *"
   workflow_dispatch:
   push:
     branches: [3.x]
@@ -11,30 +9,14 @@ on:
       - ".github/workflows/payload-cloudflare.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: payload-cloudflare-3x
+  group: payload-cloudflare-deploy
   cancel-in-progress: false
 
 jobs:
-  sync:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync official Payload 3.x
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: 3.x
-      - run: |
-          git remote add upstream https://github.com/payloadcms/payload.git
-          git fetch upstream 3.x
-          git merge --ff-only upstream/3.x
-          git push origin 3.x
-
   deploy:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -48,9 +30,10 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.22.1
       - run: pnpm config set dangerouslyAllowAllBuilds true
       - run: pnpm install --no-frozen-lockfile
+      - run: node scripts/patch-payload-workers-hash.mjs
       - name: Set Worker runtime secret
         run: printf '%s' "$PAYLOAD_SECRET" | pnpm exec wrangler secret put PAYLOAD_SECRET --name payload-cms-prod-production
         env:
